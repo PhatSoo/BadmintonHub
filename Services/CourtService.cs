@@ -1,8 +1,9 @@
 ﻿using BadmintonHub.Models;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace BadmintonHub.Services
 {
-    public class CourtService
+    public class CourtService : ICourtService
     {
         private readonly List<Court> courts = new()
         {
@@ -19,6 +20,23 @@ namespace BadmintonHub.Services
         public Court GetCourt(Guid id)
         {
             return courts.SingleOrDefault(court => court.Id == id);
+        }
+
+        public void CreateCourt(Court court)
+        {
+            courts.Add(court);
+        }
+
+        public void UpdateCourt(Court court)
+        {
+            var idx = courts.FindIndex(existingCourt => existingCourt.Id == court.Id);
+            courts[idx] = court;
+        }
+
+        public void DeleteCourt(Guid id)
+        {
+            var idx = courts.FindIndex(court => court.Id == id);
+            courts.RemoveAt(idx);
         }
     }
 }
