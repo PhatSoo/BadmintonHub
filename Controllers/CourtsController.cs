@@ -1,4 +1,4 @@
-﻿using BadmintonHub.Dtos;
+﻿using BadmintonHub.Dtos.CourtDtos;
 using BadmintonHub.Models;
 using BadmintonHub.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,24 +11,24 @@ namespace BadmintonHub.Controllers
     {
         private readonly ICourtService _courtsService;
 
-        public CourtsController(ICourtService _courtService)
+        public CourtsController(ICourtService courtService)
         {
-            this._courtsService = _courtService;
+            _courtsService = courtService;
         }
 
         // GET /courts
         [HttpGet]
-        public IEnumerable<CourtDto> GetCourts()
+        public async Task<IEnumerable<CourtDto>> GetCourtsAsync()
         {
-            var courts = _courtsService.GetCourts().Select(court => court.AsDto());
+            var courts = (await _courtsService.GetCourtsAsync()).Select(court => court.AsDto());
             return courts;
         }
 
         // GET /courts/{id}
         [HttpGet("{id}")]
-        public ActionResult<CourtDto> GetCourt(Guid id)
+        public async Task<ActionResult<CourtDto>> GetCourtAsync(Guid id)
         {
-            var court = _courtsService.GetCourt(id);
+            var court = await _courtsService.GetCourtAsync(id);
             if (court is null)
             {
                 return NotFound();
@@ -38,7 +38,7 @@ namespace BadmintonHub.Controllers
 
         // POST /courts
         [HttpPost]
-        public ActionResult<CourtDto> CreateCourt(CreateCourtDto court) {
+        public async Task<ActionResult<CourtDto>> CreateCourtAsync(CreateCourtDto court) {
             Court newCourt = new()
             {
                 Id = Guid.NewGuid(),
@@ -49,21 +49,21 @@ namespace BadmintonHub.Controllers
                 Description = court.Description,
             };
 
-            _courtsService.CreateCourt(newCourt);
+            await _courtsService.CreateCourtAsync(newCourt);
 
-            return CreatedAtAction(nameof(GetCourt), new { id = newCourt.Id }, newCourt.AsDto());
+            return CreatedAtAction(nameof(GetCourtAsync), new { id = newCourt.Id }, newCourt.AsDto());
         }
 
         // PUT /courts/{id}
         [HttpPut("{id}")]
-        public ActionResult UpdateCourt(Guid id, UpdateCourtDto court)
+        public async Task<ActionResult> UpdateCourtAsync(Guid id, UpdateCourtDto court)
         {
-            var existingCourt = _courtsService.GetCourt(id);
+            var existingCourt = _courtsService.GetCourtAsync(id);
             if (existingCourt is null)
             {
                 return NotFound();
             }
-            Court updatedCourt = existingCourt with
+            Court updatedCourt = await existingCourt with
             {
                 Name = court.Name,
                 Type = court.Type,
@@ -71,20 +71,41 @@ namespace BadmintonHub.Controllers
                 PricePerHour = court.PricePerHour,
                 Description = court.Description,
             };
-            _courtsService.UpdateCourt(updatedCourt);
+            await _courtsService.UpdateCourtAsync(updatedCourt);
+            return NoContent();
+        }
+
+        // PATCH /courts/{id}/status
+        [HttpPatch("{id}/status")]
+        public async Task<ActionResult> UpdateCourtStatusAsync(Guid id, UpdateStatusCourtDto status)
+        {
+            if (!Enum.IsDefined(typeof(CourtStatus), status.Status)) // Undifined Status Found
+            {
+                return BadRequest();
+            }
+            var existingCourt = await _courtsService.GetCourtAsync(id);
+            if (existingCourt is null)
+            {
+                return NotFound();
+            }
+            Court updatedCourt = existingCourt with
+            {
+                Status = status.Status
+            };
+            await _courtsService.UpdateCourtStatusAsync(updatedCourt);
             return NoContent();
         }
 
         // DELETE /courts/{id}
         [HttpDelete("{id}")]
-        public ActionResult DeleteCourt(Guid id)
+        public ActionResult DeleteCourtAsync(Guid id)
         {
-            var existingCourt = _courtsService.GetCourt(id);
+            var existingCourt = _courtsService.GetCourtAsync(id);
             if (existingCourt is null)
             {
                 return NotFound();
             }
-            _courtsService.DeleteCourt(id);
+            _courtsService.DeleteCourtAsync(id);
             return NoContent();
         }
     }

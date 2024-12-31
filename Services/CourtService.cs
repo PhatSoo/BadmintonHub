@@ -1,42 +1,61 @@
-﻿using BadmintonHub.Models;
+﻿using BadmintonHub.Databases;
+using BadmintonHub.Models;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
 
 namespace BadmintonHub.Services
 {
     public class CourtService : ICourtService
     {
-        private readonly List<Court> courts = new()
+        private readonly BadmintonHubDbContext _dbContext;
+        public CourtService(BadmintonHubDbContext dbContext)
         {
-            new Court { Id = Guid.NewGuid(), Name = "Court 1", PricePerHour = 10, Description = "123", Type = CourtType.Indoor, Status = CourtStatus.Available },
-            new Court { Id = Guid.NewGuid(), Name = "Court 2", PricePerHour = 8, Description = "123", Type = CourtType.Outdoor, Status = CourtStatus.Maintenance },
-            new Court { Id = Guid.NewGuid(), Name = "Court 3", PricePerHour = 8, Description = "123", Type = CourtType.Outdoor, Status = CourtStatus.Booked }
-        };
-
-        public IEnumerable<Court> GetCourts()
-        {
-            return courts;
+            _dbContext = dbContext;
         }
 
-        public Court GetCourt(Guid id)
+        public async Task<IEnumerable<Court>> GetCourtsAsync()
         {
-            return courts.SingleOrDefault(court => court.Id == id);
+            return await _dbContext.Courts.ToListAsync();
         }
 
-        public void CreateCourt(Court court)
+        public async Task<Court?> GetCourtAsync(Guid id)
         {
-            courts.Add(court);
+            return await _dbContext.Courts.FindAsync(id);
         }
 
-        public void UpdateCourt(Court court)
+        public async Task CreateCourtAsync(Court court)
         {
-            var idx = courts.FindIndex(existingCourt => existingCourt.Id == court.Id);
-            courts[idx] = court;
+            await _dbContext.Courts.AddAsync(court);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void DeleteCourt(Guid id)
+        public async Task UpdateCourtAsync(Court court)
         {
-            var idx = courts.FindIndex(court => court.Id == id);
-            courts.RemoveAt(idx);
+            var existingCourt = await _dbContext.Courts.FindAsync(court.Id);
+            if (existingCourt != null)
+            {
+                _dbContext.Entry(existingCourt).CurrentValues.SetValues(court);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        public async Task UpdateCourtStatusAsync(Court court)
+        {
+            var existingCourt = await _dbContext.Courts.FindAsync(court.Id);
+            if (existingCourt is not null)
+            {
+                _dbContext.Entry(existingCourt).CurrentValues.SetValues(court);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteCourtAsync(Guid id)
+        {
+            var court = await _dbContext.Courts.FindAsync(id);
+            if (court is not null)
+            {
+                _dbContext.Courts.Remove(court);
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }

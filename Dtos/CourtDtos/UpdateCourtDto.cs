@@ -1,12 +1,12 @@
 ﻿using BadmintonHub.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace BadmintonHub.Dtos
+namespace BadmintonHub.Dtos.CourtDtos
 {
     public record UpdateCourtDto
     {
         [Required]
-        public string Name { get; init; }
+        public string Name { get; init; } = null!;
 
         [Required]
         public CourtType Type { get; init; }
@@ -15,10 +15,10 @@ namespace BadmintonHub.Dtos
         public CourtStatus Status { get; init; }
 
         [Required]
-        [Range(50000, Double.MaxValue)]
+        [Range(50000, double.MaxValue)]
         public decimal PricePerHour { get; init; }
 
         [Required]
-        public string Description { get; init; }
+        public string? Description { get; init; }
     }
 }

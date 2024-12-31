@@ -1,4 +1,5 @@
-﻿using BadmintonHub.Dtos;
+﻿using BadmintonHub.Dtos.CourtDtos;
+using BadmintonHub.Dtos.UserDtos;
 using BadmintonHub.Models;
 
 namespace BadmintonHub
@@ -17,6 +18,20 @@ namespace BadmintonHub
                 Description = court.Description,
                 CreatedAt = court.CreatedAt,
                 UpdatedAt = court.UpdatedAt
+            };
+        }
+
+        public static UserDto AsDto(this User user)
+        {
+            return new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                DisplayName = user.DisplayName,
+                PhoneNumber = user.PhoneNumber,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt
             };
         }
     }

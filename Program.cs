@@ -1,11 +1,22 @@
+using BadmintonHub.Databases;
 using BadmintonHub.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    // Add services to the container.
-    builder.Services.AddSingleton<ICourtService, CourtService>();
+    // Add DbContext and connection string
+    builder.Services.AddDbContext<BadmintonHubDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
 
-    builder.Services.AddControllers();
+    // Add services to the container.
+    builder.Services.AddScoped<ICourtService, CourtService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddHealthChecks();
+
+    builder.Services.AddControllers(options =>
+    {
+        options.SuppressAsyncSuffixInActionNames = false;
+    });
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -20,6 +31,7 @@ var app = builder.Build();
         app.UseSwaggerUI();
     }
 
+    app.MapHealthChecks("health");
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
