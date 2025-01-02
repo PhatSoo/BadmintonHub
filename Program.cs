@@ -1,6 +1,13 @@
 using BadmintonHub.Databases;
+using BadmintonHub.Facades;
+using BadmintonHub.Handlers;
+using BadmintonHub.Mappings;
 using BadmintonHub.Services;
+using BadmintonHub.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -8,10 +15,34 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddDbContext<BadmintonHubDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
 
+    // Mapping
+    builder.Services.Configure<JwtMapping>(builder.Configuration.GetSection("Jwt"));
+
     // Add services to the container.
     builder.Services.AddScoped<ICourtService, CourtService>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IBookingService, BookingService>();
+    builder.Services.AddScoped<IBookingCourtFacade, BookingCourtFacade>();
     builder.Services.AddHealthChecks();
+
+    // Add authentication
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(bearer =>
+    {
+        bearer.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "secret_key"))
+        };
+    });
 
     builder.Services.AddControllers(options =>
     {
@@ -33,6 +64,7 @@ var app = builder.Build();
 
     app.MapHealthChecks("health");
     app.UseHttpsRedirection();
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
     app.Run();

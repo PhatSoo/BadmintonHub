@@ -1,31 +1,33 @@
 ﻿using BadmintonHub.Dtos.CourtDtos;
 using BadmintonHub.Models;
-using BadmintonHub.Services;
+using BadmintonHub.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BadmintonHub.Controllers
 {
     [ApiController]
-    [Route("/courts")]
-    public class CourtsController : Controller
+    [Route("/api/v1/courts")]
+    public class CourtController : Controller
     {
         private readonly ICourtService _courtsService;
 
-        public CourtsController(ICourtService courtService)
+        public CourtController(ICourtService courtService)
         {
             _courtsService = courtService;
         }
 
         // GET /courts
         [HttpGet]
-        public async Task<IEnumerable<CourtDto>> GetCourtsAsync()
+        public async Task<IEnumerable<CourtDto>> GetCourtsAsync([FromQuery] int? status)
         {
-            var courts = (await _courtsService.GetCourtsAsync()).Select(court => court.AsDto());
+            var courts = (await _courtsService.GetCourtsAsync(status)).Select(court => court.AsDto());
             return courts;
         }
 
         // GET /courts/{id}
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<CourtDto>> GetCourtAsync(Guid id)
         {
             var court = await _courtsService.GetCourtAsync(id);

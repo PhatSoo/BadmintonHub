@@ -1,12 +1,11 @@
 ﻿using BadmintonHub.Dtos.UserDtos;
-using BadmintonHub.Models;
-using BadmintonHub.Services;
+using BadmintonHub.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BadmintonHub.Controllers
 {
     [ApiController]
-    [Route("/")]
+    [Route("/api/v1/users")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -16,35 +15,22 @@ namespace BadmintonHub.Controllers
             _userService = userService;
         }
 
-        // POST /register
-        [HttpPost("register")]
-        public async Task<ActionResult> RegisterAsync(RegisterDto userDto)
+        // GET /users
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserDto>>> ListAllUsersAsync()
         {
-            var checkExistedUser = await _userService.GetUserByEmailAsync(userDto.Email);
-            if (checkExistedUser is not null)
-            {
-                return BadRequest("Email has been used");
-            }
-
-            await _userService.RegisterAsync(userDto);
-            return Created();
+            return Ok((await _userService.ListAllUsersAsync()).Select(user => user.AsDto()));
         }
 
-        // POST /login
-        [HttpPost("login")]
-        public async Task<ActionResult> LoginAsync(LoginDto user)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserDto>> GetUserById(Guid id)
         {
-            var existingUser = await _userService.GetUserByEmailAsync(user.Email);
-            if (existingUser is null)
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user is null)
             {
-                return Unauthorized();
+                return NotFound();
             }
-            bool isPasswordCorrect = _userService.LoginAysnc(existingUser, user.Password);
-            if (!isPasswordCorrect)
-            {
-                return Unauthorized();
-            }
-            return Ok(new { data = "12345" });
+            return Ok(user.AsDto());
         }
     }
 }

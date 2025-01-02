@@ -1,5 +1,6 @@
 ﻿using BadmintonHub.Databases;
 using BadmintonHub.Models;
+using BadmintonHub.Services.Interfaces;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,14 +9,20 @@ namespace BadmintonHub.Services
     public class CourtService : ICourtService
     {
         private readonly BadmintonHubDbContext _dbContext;
+
         public CourtService(BadmintonHubDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Court>> GetCourtsAsync()
+        public async Task<IEnumerable<Court>> GetCourtsAsync(int? status)
         {
-            return await _dbContext.Courts.ToListAsync();
+            var query = _dbContext.Courts.AsQueryable();
+            if (status.HasValue)
+            {
+                query = query.Where(c => c.Status == (CourtStatus)status);
+            }
+            return await query.ToListAsync();
         }
 
         public async Task<Court?> GetCourtAsync(Guid id)
@@ -38,6 +45,7 @@ namespace BadmintonHub.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
+
         public async Task UpdateCourtStatusAsync(Court court)
         {
             var existingCourt = await _dbContext.Courts.FindAsync(court.Id);

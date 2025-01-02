@@ -8,34 +8,31 @@ namespace BadmintonHub.Models
         User
     }
 
-    public record User
+    public class User
     {
         [Key]
-        public Guid Id { get; init; }
+        public Guid Id { get; set; }
 
         [Required]
-        public string Email { get; init; } = null!;
+        public string Email { get; set; } = null!;
 
         [Required]
-        public string Password { get; init; } = null!;
+        public string Password { get; set; } = null!;
 
         [Required]
         [StringLength(20)]
-        public string DisplayName { get; init; } = null!;
+        public string DisplayName { get; set; } = null!;
 
         [Required]
         [StringLength(10)]
-        public string PhoneNumber { get; init; } = null!;
+        public string PhoneNumber { get; set; } = null!;
 
         [Required]
-        public UserRole Role { get; init; }
+        public UserRole Role { get; set; }
 
-        public DateTime CreatedAt { get; init; }
-        public DateTime UpdatedAt { get; init; }
-        public User()
-        {
-            CreatedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
-        }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+
+        public ICollection<Booking> Bookings { get; set; } = null!;
     }
 }

@@ -15,33 +15,35 @@ namespace BadmintonHub.Models
         Maintenance
     }
 
-    public record Court
+    public class Court
     {
         [Key]
         [Required]
-        public Guid Id { get; init; }
+        public Guid Id { get; set; }
 
         [Required]
-        public string Name { get; init; } = null!;
+        public string Name { get; set; } = null!;
 
         [Required]
-        public CourtType Type { get; init; }
+        public CourtType Type { get; set; }
 
         [Required]
-        public CourtStatus Status { get; init; }
+        public CourtStatus Status { get; set; }
 
         [Required]
         [Range(50000, Double.MaxValue)]
-        public decimal PricePerHour { get; init; }
+        public decimal PricePerHour { get; set; }
 
-        public string? Description { get; init; }
-        public DateTime CreatedAt { get; init; }
-        public DateTime UpdatedAt { get; init; }
+        public string? Description { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
-        public Court()
-        {
-            CreatedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
-        }
+        public ICollection<Booking> Bookings { get; set; } = null!;
+
+        //public Court()
+        //{
+        //    CreatedAt = DateTime.Now;
+        //    UpdatedAt = DateTime.Now;
+        //}
     }
 }

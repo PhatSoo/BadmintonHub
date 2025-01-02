@@ -1,11 +1,11 @@
 ﻿using BadmintonHub.Models;
 
-namespace BadmintonHub.Services
+namespace BadmintonHub.Services.Interfaces
 {
     public interface ICourtService
     {
         Task<Court> GetCourtAsync(Guid id);
-        Task<IEnumerable<Court>> GetCourtsAsync();
+        Task<IEnumerable<Court>> GetCourtsAsync(int? status);
         Task CreateCourtAsync(Court court);
         Task UpdateCourtAsync(Court court);
         Task UpdateCourtStatusAsync(Court court);

@@ -5,7 +5,6 @@ namespace BadmintonHub.Dtos.CourtDtos
 {
     public record UpdateStatusCourtDto
     {
-
         [Required]
         public CourtStatus Status { get; init; }
     }
