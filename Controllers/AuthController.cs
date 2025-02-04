@@ -24,6 +24,10 @@ namespace BadmintonHub.Controllers
             {
                 return BadRequest("Email has been used");
             }
+            if (userDto.Role.ToString() == "Staff" && userDto.PIN == null)
+            {
+                return BadRequest("PIN is required for Staff role!");
+            }
 
             await _userService.RegisterAsync(userDto);
             return Created();

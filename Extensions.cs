@@ -1,5 +1,7 @@
 ﻿using BadmintonHub.Dtos.BookingDtos;
 using BadmintonHub.Dtos.CourtDtos;
+using BadmintonHub.Dtos.CustomerDto;
+using BadmintonHub.Dtos.StaffDtos;
 using BadmintonHub.Dtos.UserDtos;
 using BadmintonHub.Models;
 
@@ -29,7 +31,6 @@ namespace BadmintonHub
                 Id = user.Id,
                 Email = user.Email,
                 DisplayName = user.DisplayName,
-                PhoneNumber = user.PhoneNumber,
                 Role = user.Role.ToString(),
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt
@@ -46,6 +47,37 @@ namespace BadmintonHub
                 Duration = booking.Duration,
                 StartTime = booking.StartTime,
                 EndTime = booking.EndTime
+            };
+        }
+
+        public static CustomerDto AsDto(this Customer customer)
+        {
+            return new CustomerDto
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                Email = customer.Email,
+                PhoneNumber = customer.PhoneNumber,
+                AccountId = customer.AccountId,
+                IsVip = customer.IsVip,
+                Address = customer.Address,
+                CreatedAt = customer.CreatedAt,
+                UpdatedAt = customer.UpdatedAt,
+            };
+        }
+
+        public static StaffDto AsDto(this Staff staff)
+        {
+            return new StaffDto
+            {
+                Id = staff.Id,
+                Name = staff.Name,
+                Email = staff.Email,
+                PhoneNumber = staff.PhoneNumber,
+                PIN = staff.PIN,
+                Address = staff.Address ?? "",
+                CreatedAt = staff.CreatedAt,
+                UpdatedAt = staff.UpdatedAt
             };
         }
     }

@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static BadmintonHub.Constants;
 
 namespace BadmintonHub.Models
 {
-    public enum UserRole
-    {
-        Admin,
-        User
-    }
+
 
     public class User
     {
@@ -24,15 +21,13 @@ namespace BadmintonHub.Models
         public string DisplayName { get; set; } = null!;
 
         [Required]
-        [StringLength(10)]
-        public string PhoneNumber { get; set; } = null!;
-
-        [Required]
         public UserRole Role { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = null!;
+        public Customer? Customer { get; set; }
+        public Staff? Staff { get; set; }
     }
 }

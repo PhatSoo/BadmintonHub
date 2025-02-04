@@ -23,7 +23,10 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IBookingService, BookingService>();
     builder.Services.AddScoped<IBookingCourtFacade, BookingCourtFacade>();
+    builder.Services.AddScoped<ICustomerService, CustomerService>();
+    builder.Services.AddScoped<IStaffService, StaffService>();
     builder.Services.AddHealthChecks();
+    builder.Services.AddHttpContextAccessor();
 
     // Add authentication
     builder.Services.AddAuthentication(options =>

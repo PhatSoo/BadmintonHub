@@ -2,7 +2,7 @@
 
 namespace BadmintonHub.Dtos.BookingDtos
 {
-    public class CreateBookingDto
+    public record CreateBookingDto
     {
         [Required]
         public Guid CourtId { get; init; }

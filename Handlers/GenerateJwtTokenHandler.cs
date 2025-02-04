@@ -25,7 +25,8 @@ namespace BadmintonHub.Handlers
                 {
                     new Claim(ClaimTypes.Name, user.DisplayName),
                     new Claim(ClaimTypes.Role, user.Role.ToString()),
-                    new Claim("Email", user.Email)
+                    new Claim("email", user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 Issuer = _jwtMapping.Issuer,

@@ -5,20 +5,24 @@ namespace BadmintonHub.Databases
 {
     public class BadmintonHubDbContext: DbContext
     {
-        public BadmintonHubDbContext(DbContextOptions<BadmintonHubDbContext> options) : base(options)
-        {
-        }
+        public BadmintonHubDbContext(DbContextOptions<BadmintonHubDbContext> options) : base(options) { }
         public DbSet<User> Users { get; set; }
         public DbSet<Court> Courts { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Staff> Staffs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
             modelBuilder.Entity<Court>().HasIndex(u => u.Name).IsUnique();
+            modelBuilder.Entity<Staff>().HasIndex(c => c.PIN).IsUnique();
+            modelBuilder.Entity<Staff>().HasIndex(c => c.Email).IsUnique();
 
-            modelBuilder.Entity<Booking>().HasOne(b => b.Court).WithMany(c => c.Bookings).HasForeignKey(b => b.CourtId).OnDelete(DeleteBehavior.SetNull);
-            modelBuilder.Entity<Booking>().HasOne(b => b.User).WithMany(u => u.Bookings).HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Booking>().HasOne(b => b.Court).WithMany(c => c.Bookings).HasForeignKey(b => b.CourtId);
+            modelBuilder.Entity<Booking>().HasOne(b => b.User).WithMany(u => u.Bookings).HasForeignKey(b => b.UserId);
+            modelBuilder.Entity<Customer>().HasIndex(c => c.Email).IsUnique();
+            modelBuilder.Entity<Customer>().Property(c => c.IsVip).HasDefaultValue(false);
             base.OnModelCreating(modelBuilder);
         }
 

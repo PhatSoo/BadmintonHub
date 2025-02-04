@@ -8,7 +8,7 @@ namespace BadmintonHub.Controllers
 {
     [ApiController]
     [Route("/api/v1/courts")]
-    public class CourtController : Controller
+    public class CourtController : ControllerBase
     {
         private readonly ICourtService _courtsService;
 
@@ -60,20 +60,17 @@ namespace BadmintonHub.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateCourtAsync(Guid id, UpdateCourtDto court)
         {
-            var existingCourt = _courtsService.GetCourtAsync(id);
+            var existingCourt = await _courtsService.GetCourtAsync(id);
             if (existingCourt is null)
             {
                 return NotFound();
             }
-            Court updatedCourt = await existingCourt with
-            {
-                Name = court.Name,
-                Type = court.Type,
-                Status = court.Status,
-                PricePerHour = court.PricePerHour,
-                Description = court.Description,
-            };
-            await _courtsService.UpdateCourtAsync(updatedCourt);
+            existingCourt.Name = court.Name;
+            existingCourt.Type = court.Type;
+            existingCourt.Status = court.Status;
+            existingCourt.PricePerHour = court.PricePerHour;
+            existingCourt.Description = court.Description;
+            await _courtsService.UpdateCourtAsync(existingCourt);
             return NoContent();
         }
 
@@ -90,11 +87,8 @@ namespace BadmintonHub.Controllers
             {
                 return NotFound();
             }
-            Court updatedCourt = existingCourt with
-            {
-                Status = status.Status
-            };
-            await _courtsService.UpdateCourtStatusAsync(updatedCourt);
+            existingCourt.Status = status.Status;
+            await _courtsService.UpdateCourtStatusAsync(existingCourt);
             return NoContent();
         }
 

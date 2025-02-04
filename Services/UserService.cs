@@ -6,6 +6,8 @@ using BadmintonHub.Models;
 using BadmintonHub.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using static BadmintonHub.Constants;
 
 namespace BadmintonHub.Services
 {
@@ -14,12 +16,14 @@ namespace BadmintonHub.Services
         private readonly BadmintonHubDbContext _dbContext;
         private readonly HashPasswordHandler _hashPassword;
         private readonly GenerateJwtTokenHandler _generateJwtToken;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(BadmintonHubDbContext dbContext, IOptionsMonitor<JwtMapping> optionMonitor)
+        public UserService(BadmintonHubDbContext dbContext, IOptionsMonitor<JwtMapping> optionMonitor, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _hashPassword = new HashPasswordHandler();
             _generateJwtToken = new GenerateJwtTokenHandler(optionMonitor);
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
@@ -57,15 +61,61 @@ namespace BadmintonHub.Services
                 Id = Guid.NewGuid(),
                 DisplayName = user.DisplayName,
                 Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
                 Role = user.Role,
                 Password = _hashPassword.HashPassword(new User(), user.Password)
             };
+
+            if (newUser.Role == UserRole.Customer)
+            {
+                newUser.Customer = new Customer
+                {
+                    Id = Guid.NewGuid(),
+                    AccountId = newUser.Id,
+                    Email = newUser.Email,
+                    Name = newUser.DisplayName,
+                    PhoneNumber = user.PhoneNumber
+                };
+            } else
+            {
+                newUser.Staff = new Staff
+                {
+                    Id = Guid.NewGuid(),
+                    AccountId = newUser.Id,
+                    Email = newUser.Email,
+                    Name = newUser.DisplayName,
+                    PhoneNumber = user.PhoneNumber,
+                    PIN = user.PIN
+                };
+            }
 
             await _dbContext.Users.AddAsync(newUser);
             await _dbContext.SaveChangesAsync();
         }
 
+        public Guid? GetCurrentUserId()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(userId, out var guid) ? guid : null;
+        }
 
+        public async Task<PasswordChangeResult> ChangePasswordAsync(Guid? userId, string oldPass, string newPass)
+        {
+            var existingUser = await _dbContext.Users.FindAsync(userId);
+            
+            if (existingUser is null)
+            {
+                return PasswordChangeResult.UserNotFound;                
+            }
+            bool isCorrectPassword = _hashPassword.VerifyPassword(existingUser, oldPass);
+            if (!isCorrectPassword)
+            {
+                return PasswordChangeResult.InvalidOldPassword;
+            }
+
+            existingUser.Password = _hashPassword.HashPassword(new User(), newPass);
+            await _dbContext.SaveChangesAsync();
+
+            return PasswordChangeResult.Success;
+        }
     }
 }

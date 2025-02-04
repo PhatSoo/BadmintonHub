@@ -1,5 +1,6 @@
 ﻿using BadmintonHub.Models;
 using System.ComponentModel.DataAnnotations;
+using static BadmintonHub.Constants;
 
 namespace BadmintonHub.Dtos.UserDtos
 {
@@ -21,6 +22,9 @@ namespace BadmintonHub.Dtos.UserDtos
         [Phone]
         [StringLength(10)]
         public string PhoneNumber { get; init; } = null!;
+
+        [StringLength(12)]
+        public string PIN { get; init; } = null!;
 
         public UserRole Role { get; init; }
     }
