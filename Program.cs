@@ -1,6 +1,5 @@
 using BadmintonHub.Databases;
 using BadmintonHub.Facades;
-using BadmintonHub.Handlers;
 using BadmintonHub.Mappings;
 using BadmintonHub.Services;
 using BadmintonHub.Services.Interfaces;
@@ -15,18 +14,25 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddDbContext<BadmintonHubDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
 
-    // Mapping
+    // Mapping JWT
     builder.Services.Configure<JwtMapping>(builder.Configuration.GetSection("Jwt"));
 
-    // Add services to the container.
+    // Mapping Momo
+    builder.Services.Configure<MomoMapping>(builder.Configuration.GetSection("MomoPayment"));
+
+    // Mapping Service
     builder.Services.AddScoped<ICourtService, CourtService>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IBookingService, BookingService>();
     builder.Services.AddScoped<IBookingCourtFacade, BookingCourtFacade>();
     builder.Services.AddScoped<ICustomerService, CustomerService>();
     builder.Services.AddScoped<IStaffService, StaffService>();
+    builder.Services.AddScoped<IMomoService, MomoService>();
     builder.Services.AddHealthChecks();
+
+
     builder.Services.AddHttpContextAccessor();
+    builder.Services.AddHttpClient<MomoService>();
 
     // Add authentication
     builder.Services.AddAuthentication(options =>

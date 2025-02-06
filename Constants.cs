@@ -15,5 +15,19 @@
             InvalidOldPassword,
             UserNotFound
         }
+
+        public enum UserStatus
+        {
+            Active,
+            Inactive,
+            Ban
+        }
+
+        public enum BookingStatus
+        {
+            Pending,
+            Canceled,
+            Completed
+        }
     }
 }

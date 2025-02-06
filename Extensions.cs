@@ -33,7 +33,9 @@ namespace BadmintonHub
                 DisplayName = user.DisplayName,
                 Role = user.Role.ToString(),
                 CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt
+                UpdatedAt = user.UpdatedAt,
+                Staff = user.Staff?.AsDto(),
+                Customer = user.Customer?.AsDto()
             };
         }
 

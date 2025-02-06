@@ -51,7 +51,8 @@ namespace BadmintonHub.Controllers
                     CourtId = bookingDto.CourtId,
                     UserId = bookingDto.UserId,
                     Duration = bookingDto.Duration,
-                    StartTime = bookingDto.StartTime
+                    StartTime = bookingDto.StartTime,
+                    Status = Constants.BookingStatus.Pending
                 };
 
                 await _bookingCourtFacade.CreateBookingAsync(newBooking);
@@ -60,7 +61,13 @@ namespace BadmintonHub.Controllers
             {
                 return NotFound(e.Message);
             }
-           
+        }
+
+        [HttpPost("payment/{bookingId}")]
+        public async Task<ActionResult> PaymentBookingAsync([FromRoute] Guid bookingId)
+        {
+            var url = await _bookingCourtFacade.PaymentBookingAsync(bookingId);
+            return Ok(new {url = url});
         }
     }
 }

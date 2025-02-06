@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static BadmintonHub.Constants;
 
 namespace BadmintonHub.Models
 {
@@ -12,6 +13,7 @@ namespace BadmintonHub.Models
         public DateTime StartTime { get; set; }
         public DateTime BookingDate { get; set; }
         public decimal Price { get; set; }
+        public BookingStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

@@ -15,6 +15,7 @@ namespace BadmintonHub.Databases
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+            modelBuilder.Entity<User>().Property(u => u.Status).HasDefaultValue(Constants.UserStatus.Active);
             modelBuilder.Entity<Court>().HasIndex(u => u.Name).IsUnique();
             modelBuilder.Entity<Staff>().HasIndex(c => c.PIN).IsUnique();
             modelBuilder.Entity<Staff>().HasIndex(c => c.Email).IsUnique();

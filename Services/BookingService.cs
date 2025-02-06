@@ -27,10 +27,7 @@ namespace BadmintonHub.Services
         public async Task<Booking?> GetBookingByIdAsync(Guid id)
         {
             var existingBooking = await _dbContext.Bookings.Include(c => c.Court).Include(u => u.User).FirstOrDefaultAsync(b => b.Id == id);
-            if (existingBooking is null)
-            {
-                return null;
-            }
+            
             return existingBooking;
         }
     }

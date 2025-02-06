@@ -10,12 +10,14 @@ namespace BadmintonHub.Facades
         private readonly IUserService _userService;
         private readonly ICourtService _courtService;
         private readonly IBookingService _bookingService;
+        private readonly IMomoService _momoService;
 
-        public BookingCourtFacade(IUserService userService, ICourtService courtService, IBookingService bookingService)
+        public BookingCourtFacade(IUserService userService, ICourtService courtService, IBookingService bookingService, IMomoService momoService)
         {
             _userService = userService;
             _courtService = courtService;
             _bookingService = bookingService;
+            _momoService = momoService;
         }
 
         public async Task CreateBookingAsync(Booking booking)
@@ -32,6 +34,21 @@ namespace BadmintonHub.Facades
             }
 
             await _bookingService.CreateBookingAsync(booking);
+        }
+
+        public async Task<string?> PaymentBookingAsync(Guid bookingId)
+        {
+            var isExistedBooking = await _bookingService.GetBookingByIdAsync(bookingId);
+
+            if (isExistedBooking is null)
+            {
+                throw new KeyNotFoundException("Booking not found");
+            }
+
+            var amount = (long)((isExistedBooking.Duration / 60m) * isExistedBooking.Court.PricePerHour);
+
+            string url = await _momoService.PaymentBookingAsync(bookingId, amount);
+            return url;
         }
     }
 }

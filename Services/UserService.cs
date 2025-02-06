@@ -38,7 +38,7 @@ namespace BadmintonHub.Services
 
         public async Task<User?> GetUserByIdAsync(Guid id)
         {
-            return await _dbContext.Users.FindAsync(id) ?? null;
+            return await _dbContext.Users.Include(u => u.Customer).Include(u => u.Staff).FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public string? LoginAysnc(User user, string enteredPassword)

@@ -21,6 +21,7 @@ namespace BadmintonHub.Controllers
         // ADMIN FUNCTIONS -- START
         // GET /users
         [HttpGet("users")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserDto>>> ListAllUsersAsync()
         {
             return Ok((await _userService.ListAllUsersAsync()).Select(user => user.AsDto()));
@@ -28,6 +29,7 @@ namespace BadmintonHub.Controllers
 
         // GET /users/{id}
         [HttpGet("users/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> GetUserById(Guid id)
         {
             var user = await _userService.GetUserByIdAsync(id);

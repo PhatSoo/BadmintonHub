@@ -22,6 +22,7 @@ namespace BadmintonHub.Models
 
         [Required]
         public UserRole Role { get; set; }
+        public UserStatus Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
