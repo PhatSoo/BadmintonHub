@@ -1,8 +1,11 @@
 ﻿using BadmintonHub.Dtos.BookingDtos;
 using BadmintonHub.Facades;
 using BadmintonHub.Models;
+using BadmintonHub.ResponseType;
 using BadmintonHub.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace BadmintonHub.Controllers
 {
@@ -66,8 +69,18 @@ namespace BadmintonHub.Controllers
         [HttpPost("payment/{bookingId}")]
         public async Task<ActionResult> PaymentBookingAsync([FromRoute] Guid bookingId)
         {
-            var url = await _bookingCourtFacade.PaymentBookingAsync(bookingId);
-            return Ok(new {url = url});
+            MomoPaymentResponse? response = await _bookingCourtFacade.PaymentBookingAsync(bookingId);
+            if (response is null)
+            {
+                return BadRequest("Something went wrong!");
+            }
+
+            if (response.ResultCode != 0)
+            {
+                return BadRequest(response.Message);
+            }
+
+            return Ok(new {data = response});
         }
     }
 }

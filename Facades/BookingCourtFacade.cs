@@ -1,5 +1,6 @@
 ﻿using BadmintonHub.Dtos.BookingDtos;
 using BadmintonHub.Models;
+using BadmintonHub.ResponseType;
 using BadmintonHub.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,7 +37,7 @@ namespace BadmintonHub.Facades
             await _bookingService.CreateBookingAsync(booking);
         }
 
-        public async Task<string?> PaymentBookingAsync(Guid bookingId)
+        public async Task<MomoPaymentResponse?> PaymentBookingAsync(Guid bookingId)
         {
             var isExistedBooking = await _bookingService.GetBookingByIdAsync(bookingId);
 
@@ -47,8 +48,9 @@ namespace BadmintonHub.Facades
 
             var amount = (long)((isExistedBooking.Duration / 60m) * isExistedBooking.Court.PricePerHour);
 
-            string url = await _momoService.PaymentBookingAsync(bookingId, amount);
-            return url;
+            var response = await _momoService.PaymentBookingAsync(bookingId, amount);
+
+            return response;
         }
     }
 }

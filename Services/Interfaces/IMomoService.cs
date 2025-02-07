@@ -1,7 +1,9 @@
-﻿namespace BadmintonHub.Services.Interfaces
+﻿using BadmintonHub.ResponseType;
+
+namespace BadmintonHub.Services.Interfaces
 {
     public interface IMomoService
     {
-        public Task<string?> PaymentBookingAsync(Guid bookingId, long amount);
+        public Task<MomoPaymentResponse?> PaymentBookingAsync(Guid bookingId, long amount);
     }
 }
