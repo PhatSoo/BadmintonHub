@@ -3,6 +3,7 @@ using BadmintonHub.Models;
 using BadmintonHub.Services.Interfaces;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BadmintonHub.Services
 {
@@ -27,7 +28,7 @@ namespace BadmintonHub.Services
 
         public async Task<Court?> GetCourtAsync(Guid id)
         {
-            return await _dbContext.Courts.FindAsync(id);
+            return await _dbContext.Courts.FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task CreateCourtAsync(Court court)
@@ -64,6 +65,24 @@ namespace BadmintonHub.Services
                 _dbContext.Courts.Remove(court);
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        public async Task<IEnumerable<Court>> GetAvailableCourts(DateTime date, TimeSpan startTime, TimeSpan endTime)
+        {
+            if (startTime > endTime || (endTime - startTime).TotalMinutes < 60)
+            {
+                throw new ArgumentException("Invalid time range.");
+            }
+
+            var bookedCourtIds = _dbContext.Bookings
+                .Where(b => b.BookingDate == date && b.StartTime < endTime && b.EndTime > startTime)
+                .Select(b => b.CourtId)
+                .Distinct()
+                .ToList();
+
+            return await _dbContext.Courts
+                .Where(c => !bookedCourtIds.Contains(c.Id) && c.Status == CourtStatus.Available)
+                .ToListAsync();
         }
     }
 }

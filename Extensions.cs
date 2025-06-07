@@ -1,6 +1,7 @@
 ﻿using BadmintonHub.Dtos.BookingDtos;
 using BadmintonHub.Dtos.CourtDtos;
 using BadmintonHub.Dtos.CustomerDto;
+using BadmintonHub.Dtos.FieldDtos;
 using BadmintonHub.Dtos.StaffDtos;
 using BadmintonHub.Dtos.UserDtos;
 using BadmintonHub.Models;
@@ -46,7 +47,6 @@ namespace BadmintonHub
                 Id = booking.Id,
                 CourtName = booking.Court.Name,
                 GuestName = booking.User?.DisplayName ?? "Unknown",
-                Duration = booking.Duration,
                 StartTime = booking.StartTime,
                 EndTime = booking.EndTime
             };
@@ -80,6 +80,15 @@ namespace BadmintonHub
                 Address = staff.Address ?? "",
                 CreatedAt = staff.CreatedAt,
                 UpdatedAt = staff.UpdatedAt
+            };
+        }
+
+        public static FieldClosure AsDto(this FieldClosure closure)
+        {
+            return new FieldClosure
+            {
+                ClosedDate = closure.ClosedDate,
+                Reason = closure.Reason,
             };
         }
     }

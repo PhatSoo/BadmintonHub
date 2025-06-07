@@ -1,5 +1,6 @@
 ﻿using BadmintonHub.Dtos.UserDtos;
 using BadmintonHub.Services.Interfaces;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BadmintonHub.Controllers
@@ -9,10 +10,12 @@ namespace BadmintonHub.Controllers
     public class AuthController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(IUserService userService)
+        public AuthController(IUserService userService, IConfiguration configuration)
         {
             _userService = userService;
+            _configuration = configuration;
         }
 
         // POST /register

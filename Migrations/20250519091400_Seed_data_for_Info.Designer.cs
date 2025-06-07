@@ -4,6 +4,7 @@ using BadmintonHub.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BadmintonHub.Migrations
 {
     [DbContext(typeof(BadmintonHubDbContext))]
-    partial class BadmintonHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519091400_Seed_data_for_Info")]
+    partial class Seed_data_for_Info
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,14 +43,11 @@ namespace BadmintonHub.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -150,29 +150,6 @@ namespace BadmintonHub.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("BadmintonHub.Models.FieldClosure", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ClosedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FieldClosures");
-                });
-
             modelBuilder.Entity("BadmintonHub.Models.Info", b =>
                 {
                     b.Property<Guid>("Id")
@@ -180,10 +157,6 @@ namespace BadmintonHub.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -212,7 +185,6 @@ namespace BadmintonHub.Migrations
                         {
                             Id = new Guid("103dfd14-502c-49b9-84c2-888b99e1f2f4"),
                             Address = "Đại lộ Bình Dương, Thủ Dầu Một, Bình Dương",
-                            Description = "Badminton Hub is your ultimate destination for badminton enthusiasts! We offer easy online court booking so you can secure your playtime hassle-free. Whether you're a beginner or a pro, you can also hire professional coaches to improve your skills and enjoy personalized training sessions. Experience top-quality facilities and expert guidance all in one place at Badminton Hub!",
                             Email = "abc@gmail.com",
                             Name = "Badminton Hub",
                             Phone = "0123456789",

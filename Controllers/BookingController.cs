@@ -1,4 +1,5 @@
 ﻿using BadmintonHub.Dtos.BookingDtos;
+using BadmintonHub.Dtos.CourtDtos;
 using BadmintonHub.Facades;
 using BadmintonHub.Models;
 using BadmintonHub.ResponseType;
@@ -53,8 +54,8 @@ namespace BadmintonHub.Controllers
                     Id = Guid.NewGuid(),
                     CourtId = bookingDto.CourtId,
                     UserId = bookingDto.UserId,
-                    Duration = bookingDto.Duration,
                     StartTime = bookingDto.StartTime,
+                    EndTime = bookingDto.EndTime,
                     Status = Constants.BookingStatus.Pending
                 };
 
@@ -66,6 +67,7 @@ namespace BadmintonHub.Controllers
             }
         }
 
+        // POST /payment/{id}
         [HttpPost("payment/{bookingId}")]
         public async Task<ActionResult> PaymentBookingAsync([FromRoute] Guid bookingId)
         {

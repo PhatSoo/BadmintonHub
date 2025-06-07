@@ -11,7 +11,6 @@ namespace BadmintonHub.Models
     public enum CourtStatus
     {
         Available,
-        Booked,
         Maintenance
     }
 

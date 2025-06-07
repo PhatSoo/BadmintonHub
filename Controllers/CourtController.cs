@@ -1,5 +1,6 @@
 ﻿using BadmintonHub.Dtos.CourtDtos;
 using BadmintonHub.Models;
+using BadmintonHub.Services;
 using BadmintonHub.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -103,6 +104,18 @@ namespace BadmintonHub.Controllers
             }
             _courtsService.DeleteCourtAsync(id);
             return NoContent();
+        }
+
+        // GET /courts/available-courts
+        [HttpGet("available-courts")]
+        public async Task<ActionResult<IEnumerable<CourtDto>>> GetAvailableCourtsAsync([FromQuery] CourtAvailabilityQueryDto query)
+        {
+            var availableCourts = await _courtsService.GetAvailableCourts(query.Date, query.StartTime, query.EndTime);
+            if (availableCourts is null || !availableCourts.Any())
+            {
+                return NotFound("No available courts found for the specified time.");
+            }
+            return Ok(availableCourts.Select(court => court.AsDto()));
         }
     }
 }

@@ -1,4 +1,4 @@
-using BadmintonHub.Databases;
+﻿using BadmintonHub.Databases;
 using BadmintonHub.Facades;
 using BadmintonHub.Mappings;
 using BadmintonHub.Services;
@@ -28,6 +28,8 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<ICustomerService, CustomerService>();
     builder.Services.AddScoped<IStaffService, StaffService>();
     builder.Services.AddScoped<IMomoService, MomoService>();
+    builder.Services.AddScoped<IInfoService, InfoService>();
+    builder.Services.AddScoped<IFieldService, FieldService>();
     builder.Services.AddHealthChecks();
 
 
@@ -51,6 +53,10 @@ var builder = WebApplication.CreateBuilder(args);
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "secret_key"))
         };
+    }).AddGoogle(google =>
+    {
+        google.ClientId = builder.Configuration["GoogleAuth:ClientID"];
+        google.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
     });
 
     builder.Services.AddControllers(options =>

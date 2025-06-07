@@ -1,5 +1,4 @@
-﻿using BadmintonHub.Dtos.BookingDtos;
-using BadmintonHub.Models;
+﻿using BadmintonHub.Models;
 
 namespace BadmintonHub.Services.Interfaces
 {

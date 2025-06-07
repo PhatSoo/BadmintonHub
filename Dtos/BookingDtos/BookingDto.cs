@@ -5,8 +5,7 @@
         public Guid Id { get; init; }
         public string CourtName { get; init; } = null!;
         public string GuestName { get; init; } = null!;
-        public int Duration { get; init; }
-        public DateTime StartTime { get; init; }
-        public DateTime EndTime { get; init; }
+        public TimeSpan StartTime { get; init; }
+        public TimeSpan EndTime { get; init; }
     }
 }

@@ -11,10 +11,9 @@ namespace BadmintonHub.Dtos.BookingDtos
         public Guid UserId { get; init; }
 
         [Required]
-        public DateTime StartTime { get; init; }
+        public TimeSpan StartTime { get; init; }
 
         [Required]
-        [Range(30, 180, ErrorMessage = "You can booking at least > 30m & < 180m")]
-        public int Duration { get; init; }
+        public TimeSpan EndTime { get; init; }
     }
 }
