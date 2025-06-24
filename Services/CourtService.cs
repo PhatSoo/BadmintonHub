@@ -1,24 +1,88 @@
-﻿using BadmintonHub.Models;
+﻿using BadmintonHub.Databases;
+using BadmintonHub.Models;
+using BadmintonHub.Services.Interfaces;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BadmintonHub.Services
 {
-    public class CourtService
+    public class CourtService : ICourtService
     {
-        private readonly List<Court> courts = new()
-        {
-            new Court { Id = Guid.NewGuid(), Name = "Court 1", PricePerHour = 10, Description = "123", Type = CourtType.Indoor, Status = CourtStatus.Available },
-            new Court { Id = Guid.NewGuid(), Name = "Court 2", PricePerHour = 8, Description = "123", Type = CourtType.Outdoor, Status = CourtStatus.Maintenance },
-            new Court { Id = Guid.NewGuid(), Name = "Court 3", PricePerHour = 8, Description = "123", Type = CourtType.Outdoor, Status = CourtStatus.Booked }
-        };
+        private readonly BadmintonHubDbContext _dbContext;
 
-        public IEnumerable<Court> GetCourts()
+        public CourtService(BadmintonHubDbContext dbContext)
         {
-            return courts;
+            _dbContext = dbContext;
         }
 
-        public Court GetCourt(Guid id)
+        public async Task<IEnumerable<Court>> GetCourtsAsync(int? status)
         {
-            return courts.SingleOrDefault(court => court.Id == id);
+            var query = _dbContext.Courts.AsQueryable();
+            if (status.HasValue)
+            {
+                query = query.Where(c => c.Status == (CourtStatus)status);
+            }
+            return await query.ToListAsync();
+        }
+
+        public async Task<Court?> GetCourtAsync(Guid id)
+        {
+            return await _dbContext.Courts.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task CreateCourtAsync(Court court)
+        {
+            await _dbContext.Courts.AddAsync(court);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateCourtAsync(Court court)
+        {
+            var existingCourt = await _dbContext.Courts.FindAsync(court.Id);
+            if (existingCourt != null)
+            {
+                _dbContext.Entry(existingCourt).CurrentValues.SetValues(court);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateCourtStatusAsync(Court court)
+        {
+            var existingCourt = await _dbContext.Courts.FindAsync(court.Id);
+            if (existingCourt is not null)
+            {
+                _dbContext.Entry(existingCourt).CurrentValues.SetValues(court);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteCourtAsync(Guid id)
+        {
+            var court = await _dbContext.Courts.FindAsync(id);
+            if (court is not null)
+            {
+                _dbContext.Courts.Remove(court);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Court>> GetAvailableCourts(DateTime date, TimeSpan startTime, TimeSpan endTime)
+        {
+            if (startTime > endTime || (endTime - startTime).TotalMinutes < 60)
+            {
+                throw new ArgumentException("Invalid time range.");
+            }
+
+            var bookedCourtIds = _dbContext.Bookings
+                .Where(b => b.BookingDate == date && b.StartTime < endTime && b.EndTime > startTime)
+                .Select(b => b.CourtId)
+                .Distinct()
+                .ToList();
+
+            return await _dbContext.Courts
+                .Where(c => !bookedCourtIds.Contains(c.Id) && c.Status == CourtStatus.Available)
+                .ToListAsync();
         }
     }
 }
