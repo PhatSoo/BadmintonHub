@@ -2,6 +2,7 @@
 using BadmintonHub.Dtos.CourtDtos;
 using BadmintonHub.Dtos.CustomerDto;
 using BadmintonHub.Dtos.FieldDtos;
+using BadmintonHub.Dtos.MenuDtos;
 using BadmintonHub.Dtos.StaffDtos;
 using BadmintonHub.Dtos.UserDtos;
 using BadmintonHub.Models;
@@ -89,6 +90,18 @@ namespace BadmintonHub
             {
                 ClosedDate = closure.ClosedDate,
                 Reason = closure.Reason,
+            };
+        }
+
+        public static MenuDto AsDto(this Menu menu)
+        {
+            return new MenuDto
+            {
+                Id = menu.Id,
+                Name = menu.Name,
+                Description = menu.Description,
+                Price = menu.Price,
+                ImageUrl = menu.ImageUrl
             };
         }
     }

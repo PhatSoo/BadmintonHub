@@ -30,6 +30,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IMomoService, MomoService>();
     builder.Services.AddScoped<IInfoService, InfoService>();
     builder.Services.AddScoped<IFieldService, FieldService>();
+    builder.Services.AddScoped<IMenuService, MenuService>();
     builder.Services.AddHealthChecks();
 
 
