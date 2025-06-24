@@ -38,11 +38,5 @@ namespace BadmintonHub.Models
         public DateTime UpdatedAt { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = null!;
-
-        //public Court()
-        //{
-        //    CreatedAt = DateTime.Now;
-        //    UpdatedAt = DateTime.Now;
-        //}
     }
 }

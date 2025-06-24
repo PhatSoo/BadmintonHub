@@ -13,6 +13,7 @@ namespace BadmintonHub.Databases
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<Info> Infos { get; set; }
         public DbSet<FieldClosure> FieldClosures { get; set; }
+        public DbSet<Menu> Menu { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,6 +39,25 @@ namespace BadmintonHub.Databases
                     Description = "Badminton Hub is your ultimate destination for badminton enthusiasts! We offer easy online court booking so you can secure your playtime hassle-free. Whether you're a beginner or a pro, you can also hire professional coaches to improve your skills and enjoy personalized training sessions. Experience top-quality facilities and expert guidance all in one place at Badminton Hub!",
                     WorkingTime = "8:00 - 22:00",
                 });
+
+            modelBuilder.Entity<Menu>().HasData(
+                new Menu
+                {
+                    Id = Guid.Parse("8bca8fe0-b0d0-40b9-a5d3-5d956fa79c8e"),
+                    Name = "Normal Court",
+                    Description = "A standard badminton court designed for casual play, with basic flooring, standard lighting, and regular net setup.",
+                    Price = 5.0,
+                    ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgIAFwTaBOi189iF7NSxzRx7U1oI90_QsS6A&s"
+                },
+                new Menu
+                {
+                    Id = Guid.Parse("c70819b1-a866-41fe-8025-7776b0fd4464"),
+                    Name = "Advanced Court",
+                    Description = "A professional-grade badminton court with premium flooring, enhanced lighting, and precise markings for competitive play.",
+                    Price = 10.0,
+                    ImageUrl = "https://cdn.iconscout.com/icon/premium/png-256-thumb/badminton-coach-1653707-1400021.png"
+                });
+
             base.OnModelCreating(modelBuilder);
         }
 
